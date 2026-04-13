@@ -34,6 +34,8 @@ ALLOWED_HOSTS = [
     "emmanuel-django-test-123-c4bjh0hacjgfb2ar.canadacentral-01.azurewebsites.net",
 ]
 
+SECURE_PROXY_SSL_HEADER = ('HTTP_X_FORWARDED_PROTO', 'https')
+
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
 
