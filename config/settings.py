@@ -26,18 +26,13 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 SECRET_KEY = os.environ.get("SECRET_KEY", "dev-secret")
 DEBUG = os.environ.get("DEBUG", "False") == "True"
 
-import os
+CSRF_TRUSTED_ORIGINS = [
+    "https://emmanuel-django-test-123-c4bjh0hacjgfb2ar.canadacentral-01.azurewebsites.net",
+]
 
-ALLOWED_HOSTS = os.environ.get(
-    "ALLOWED_HOSTS",
-    "127.0.0.1,localhost"
-).split(",")
-
-CSRF_TRUSTED_ORIGINS = os.environ.get(
-    "CSRF_TRUSTED_ORIGINS",
-    "http://127.0.0.1,http://localhost"
-).split(",")
-
+ALLOWED_HOSTS = [
+    "emmanuel-django-test-123-c4bjh0hacjgfb2ar.canadacentral-01.azurewebsites.net",
+]
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
@@ -141,23 +136,23 @@ STATIC_ROOT = BASE_DIR / 'staticfiles'
 
 # Azure Blob Storage Configuration (Optional)
 # Uncomment when you have Azure Storage set up
-# if os.environ.get("AZURE_STORAGE_ACCOUNT_NAME"):
-#     STORAGES = {
-#         "default": {
-#             "BACKEND": "storages.backends.azure_storage.AzureStorage",
-#             "OPTIONS": {
-#                 "account_name": os.environ.get("AZURE_STORAGE_ACCOUNT_NAME"),
-#                 "account_key": os.environ.get("AZURE_STORAGE_ACCOUNT_KEY"),
-#                 "azure_container": "media",
-#                 "custom_domain": f"{os.environ.get('AZURE_STORAGE_ACCOUNT_NAME')}.blob.core.windows.net",
-#             }
-#         },
-#         "staticfiles": {
-#             "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
-#         }
-#     }
-#     MEDIA_URL = f"https://{os.environ.get('AZURE_STORAGE_ACCOUNT_NAME')}.blob.core.windows.net/media/"
-# else:
-# Local development / deployment without Azure Storage
-MEDIA_URL = '/media/'
-MEDIA_ROOT = BASE_DIR / 'media'
+if os.environ.get("AZURE_STORAGE_ACCOUNT_NAME"):
+    STORAGES = {
+        "default": {
+            "BACKEND": "storages.backends.azure_storage.AzureStorage",
+            "OPTIONS": {
+                "account_name": os.environ.get("AZURE_STORAGE_ACCOUNT_NAME"),
+                "account_key": os.environ.get("AZURE_STORAGE_ACCOUNT_KEY"),
+                "azure_container": "media",
+                "custom_domain": f"{os.environ.get('AZURE_STORAGE_ACCOUNT_NAME')}.blob.core.windows.net",
+            }
+        },
+        "staticfiles": {
+            "BACKEND": "django.contrib.staticfiles.storage.StaticFilesStorage",
+        }
+    }
+    MEDIA_URL = f"https://{os.environ.get('AZURE_STORAGE_ACCOUNT_NAME')}.blob.core.windows.net/media/"
+else:
+    # Local development / deployment without Azure Storage
+    MEDIA_URL = '/media/'
+    MEDIA_ROOT = BASE_DIR / 'media'
