@@ -35,8 +35,9 @@ ALLOWED_HOSTS = os.environ.get(
 
 CSRF_TRUSTED_ORIGINS = os.environ.get(
     "CSRF_TRUSTED_ORIGINS",
-    "http://127.0.0.1,http://localhost,https://emmanuel-django-test-123-c4bjh0hacjgfb2ar.canadacentral-01.azurewebsites.net"
+    "http://127.0.0.1,http://localhost"
 ).split(",")
+
 
 SECURE_PROXY_SSL_HEADER = ("HTTP_X_FORWARDED_PROTO", "https")
 # Application definition
