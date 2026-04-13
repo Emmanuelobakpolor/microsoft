@@ -1,4 +1,7 @@
-from django.http import HttpResponse
+from django.http import JsonResponse
 
 def home(request):
-    return HttpResponse("Hello from Azure")
+    return JsonResponse({
+        "message": "Hello from Azure",
+        "status": "ok"
+    })
