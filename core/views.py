@@ -1,5 +1,7 @@
 from django.http import JsonResponse
 from django.views.decorators.http import require_http_methods
+from django.views.decorators.csrf import csrf_exempt
+from core.models import Product
 import json
 
 def home(request):
@@ -22,38 +24,64 @@ def api_users(request):
 def api_products(request):
     """Get products or create new product"""
     if request.method == "GET":
-        products = [
-            {"id": 1, "name": "Laptop", "price": 999.99},
-            {"id": 2, "name": "Mouse", "price": 29.99},
-            {"id": 3, "name": "Keyboard", "price": 79.99},
-        ]
-        return JsonResponse({"products": products})
+        products = Product.objects.all()
+        products_list = []
+        for product in products:
+            product_data = {
+                "id": product.id,
+                "name": product.name,
+                "price": str(product.price),
+                "description": product.description,
+                "image": product.image.url if product.image else None,
+                "created_at": product.created_at.isoformat()
+            }
+            products_list.append(product_data)
+        return JsonResponse({"products": products_list, "count": len(products_list)})
 
     elif request.method == "POST":
         try:
-            data = json.loads(request.body)
-            new_product = {
-                "id": 4,
-                "name": data.get("name", "Unknown"),
-                "price": data.get("price", 0)
-            }
-            return JsonResponse({"message": "Product created", "product": new_product}, status=201)
-        except json.JSONDecodeError:
-            return JsonResponse({"error": "Invalid JSON"}, status=400)
+            name = request.POST.get("name")
+            price = request.POST.get("price")
+            description = request.POST.get("description", "")
+            image = request.FILES.get("image")
+
+            if not name or not price:
+                return JsonResponse({"error": "Name and price are required"}, status=400)
+
+            product = Product.objects.create(
+                name=name,
+                price=price,
+                description=description,
+                image=image
+            )
+            return JsonResponse({
+                "message": "Product created successfully",
+                "product": {
+                    "id": product.id,
+                    "name": product.name,
+                    "price": str(product.price),
+                    "image": product.image.url if product.image else None
+                }
+            }, status=201)
+        except Exception as e:
+            return JsonResponse({"error": str(e)}, status=400)
 
 @require_http_methods(["GET"])
 def api_product_detail(request, product_id):
     """Get a specific product by ID"""
-    products = {
-        1: {"id": 1, "name": "Laptop", "price": 999.99, "stock": 5},
-        2: {"id": 2, "name": "Mouse", "price": 29.99, "stock": 50},
-        3: {"id": 3, "name": "Keyboard", "price": 79.99, "stock": 30},
-    }
-
-    product = products.get(product_id)
-    if product:
-        return JsonResponse(product)
-    return JsonResponse({"error": "Product not found"}, status=404)
+    try:
+        product = Product.objects.get(id=product_id)
+        return JsonResponse({
+            "id": product.id,
+            "name": product.name,
+            "price": str(product.price),
+            "description": product.description,
+            "image": product.image.url if product.image else None,
+            "created_at": product.created_at.isoformat(),
+            "updated_at": product.updated_at.isoformat()
+        })
+    except Product.DoesNotExist:
+        return JsonResponse({"error": "Product not found"}, status=404)
 
 @require_http_methods(["GET"])
 def api_stats(request):
