@@ -2,12 +2,6 @@
 
 # Startup script for Azure App Service
 
-# Navigate to app directory
-cd /home/site/wwwroot
-
-# Install dependencies
-pip install -r requirements.txt
-
 # Run Django migrations
 python manage.py migrate
 
